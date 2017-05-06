@@ -84,10 +84,15 @@ def main():
         #print(existNewAC())
         if existNewAC():
             getNewAC()
+        
         root = Tk()
+        root.withdraw()  
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight() - 100    #under windows, taskbar may lie under the screen
+        root.resizable(False,False)
         root.title('Balloon Sender')
         root.attributes("-topmost", 1)
-        display = StringVar()
+
         refresh = Button(root, text="Refresh", fg="red", command=root.destroy)
         refresh.pack(side="bottom")
         for i in range(len(todoLst)):
@@ -97,7 +102,13 @@ def main():
                     txt = todoLst[i][j]
                     label(keyF, LEFT, txt)
                 button(keyF, LEFT, 'Done', command = lambda i=i: addToRmLst(i))  
-                # two problems: 1. need to notify when a button is clicked twice
+                # need to notify when a button is clicked twice
+ 
+        root.update_idletasks()
+        root.deiconify()    # calculate window size
+        root.withdraw()     # hide window
+        root.geometry('%sx%s+%s+%s' % (root.winfo_width() + 10, root.winfo_height() + 10, (screen_width - root.winfo_width())/2, (screen_height - root.winfo_height())/2) )    # center window
+        root.deiconify()
         root.mainloop()
 
 if __name__ == '__main__':
