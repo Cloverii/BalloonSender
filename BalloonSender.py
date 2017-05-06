@@ -5,13 +5,13 @@ import urllib2
 from Tkinter import *
 import cookielib
 
-color = {'A':'red', 'B':'blue', 'C':'green', 'D':'purple'}
-
 def getStatus():
-    cid = '219'
-    iDisplayStart = '0'
-    iDisplayLength = '2000'
-    sSearch_3 = 'Accepted'
+    data = conf['cinfo']
+    cid = data['cid']
+    iDisplayStart = data['iDisplayStart']
+    iDisplayLength = data['iDisplayLength']
+    sSearch_3 = data['sSearch_3']
+    
     cookie = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
     req = urllib2.Request('http://acm.cqu.edu.cn/ajax/contest_status_data.php?cid=' + cid + '&randomid=0.8867441343120868&sEcho=5&iColumns=10&sColumns=&iDisplayStart=' + iDisplayStart + '&iDisplayLength=' + iDisplayLength + '&mDataProp_0=0&mDataProp_1=1&mDataProp_2=2&mDataProp_3=3&mDataProp_4=4&mDataProp_5=5&mDataProp_6=6&mDataProp_7=7&mDataProp_8=8&mDataProp_9=9&sSearch=&bRegex=false&sSearch_0=&bRegex_0=false&bSearchable_0=true&sSearch_1=&bRegex_1=false&bSearchable_1=true&sSearch_2=&bRegex_2=false&bSearchable_2=true&sSearch_3=' + sSearch_3 + '&bRegex_3=false&bSearchable_3=true&sSearch_4=&bRegex_4=false&bSearchable_4=true&sSearch_5=&bRegex_5=false&bSearchable_5=true&sSearch_6=&bRegex_6=false&bSearchable_6=true&sSearch_7=&bRegex_7=false&bSearchable_7=true&sSearch_8=&bRegex_8=false&bSearchable_8=true&sSearch_9=&bRegex_9=false&bSearchable_9=true&iSortCol_0=1&sSortDir_0=desc&iSortingCols=1&bSortable_0=false&bSortable_1=false&bSortable_2=false&bSortable_3=false&bSortable_4=false&bSortable_5=false&bSortable_6=false&bSortable_7=false&bSortable_8=false&bSortable_9=false&_=1494052227604')
@@ -21,20 +21,20 @@ def getStatus():
     
 def getNewAC():
     global lastRecord, total
+    color = conf['color']
     lst = status['aaData']
-    #print status
+
     for item in lst:
         if((item[0], item[2])) in records:
             continue
         records.add((item[0], item[2]))
         res =[item[2].center(3, ' '), color[item[2]].center(8, ' '), item[0].center(20, ' '), item[1], item[8]]
         res[3] = int(res[3])
-        #print(res[3], lastRecord)
         if res[3] <= lastRecord:
             break;
         todoLst.append(res)
+        
     total = int(status['iTotalDisplayRecords'])
-
     lastRecord = int(lst[0][1])
 
 
@@ -68,13 +68,15 @@ def removeItems():
     del rmLst[:]
 
 def main():
-    global lastRecord, total, status, todoLst, rmLst, records
+    global lastRecord, total, status, todoLst, rmLst, records, conf
     lastRecord = -1
     total = 0
     todoLst = []
     rmLst = []
     records = set()
     flag = True
+    with open('conf.json', 'r') as f:    
+        conf = json.load(f)
     
     while(flag):
         removeItems()
