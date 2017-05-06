@@ -5,6 +5,8 @@ import urllib2
 from Tkinter import *
 import cookielib
 
+color = {'A':'red', 'B':'blue', 'C':'green', 'D':'purple'}
+
 def getStatus():
     cid = '219'
     iDisplayStart = '0'
@@ -18,19 +20,26 @@ def getStatus():
     return json.load(res)
     
 def getNewAC():
-    global lastRecord
+    global lastRecord, total
     lst = status['aaData']
-    for res in lst:
-        res = res[0:3]
-        res[1] = int(res[1])
-        if res[1] <= lastRecord:
+    #print status
+    for item in lst:
+        if((item[0], item[2])) in records:
+            continue
+        records.add((item[0], item[2]))
+        res =[item[2].center(3, ' '), color[item[2]].center(8, ' '), item[0].center(20, ' '), item[1], item[8]]
+        res[3] = int(res[3])
+        #print(res[3], lastRecord)
+        if res[3] <= lastRecord:
             break;
         todoLst.append(res)
     total = int(status['iTotalDisplayRecords'])
-    #print(total)
+
     lastRecord = int(lst[0][1])
 
+
 def existNewAC():
+    #print(int(status['iTotalDisplayRecords']), total)
     return int(status['iTotalDisplayRecords']) != total
         
 def frame(root, side):
@@ -59,11 +68,12 @@ def removeItems():
     del rmLst[:]
 
 def main():
-    global lastRecord, total, status, todoLst, rmLst
+    global lastRecord, total, status, todoLst, rmLst, records
     lastRecord = -1
     total = 0
     todoLst = []
     rmLst = []
+    records = set()
     flag = True
     
     while(flag):
