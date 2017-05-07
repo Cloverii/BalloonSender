@@ -20,11 +20,11 @@ Python 2.7
 - Records are shown out of order.
 
 ### Todo List
-- [] Improve UI
-- [] Add GUI configuration
-- [] Try not to crawl all ACs every time
-- [] Refresh automatically
-- [] Add support to the location of teams
+- [ ] Improve UI
+- [ ] Add GUI configuration
+- [ ] Try not to crawl all ACs every time
+- [ ] Refresh automatically
+- [ ] Add support to the location of teams
 
 ### Support
 If you need help, contact [cloveriiw@gmail.com](mailto:cloveriiw@gmail.com).
@@ -40,3 +40,7 @@ v0.2.0.
 v0.2.1.
 - Add README
 - Format the config file
+
+v0.2.2
+
+- Fix README
