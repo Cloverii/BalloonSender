@@ -1,4 +1,13 @@
 {
-    "cinfo":{"cid":"219", "iDisplayStart":"0", "iDisplayLength":"2000", "sSearch_3": "Accepted"},
-    "color":{"A":"red", "B":"blue", "C":"green", "D":"purple"}
+    "cinfo":{
+        "cid":"219", "iDisplayStart":"0", 
+        "iDisplayLength":"2000", 
+        "sSearch_3": "Accepted"
+    },
+    "color":{
+        "A":"red", 
+        "B":"blue", 
+        "C":"green", 
+        "D":"purple"
+    }
 }
