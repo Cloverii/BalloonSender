@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-# 1. when the window is placed in the center, AC >= 295 boom
-# 2. add the judge Contest Unavailable!
+# 1. what will happen when can't access the server
 import re
 import json
 import urllib  
@@ -15,10 +14,11 @@ def tryAccess():
     request = urllib2.Request('http://acm.cqu.edu.cn/contest_info.php?cid='+ conf['cinfo']['cid'])
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
     result = opener.open(request).read()
-    
+    #print result
     pattern = re.compile(r'Contest Unavailable!')
     ret = re.match(pattern,result)
-    return ret != None
+    return ret == None
+    #return a corresponding MatchObject instance. Return None if the string does not match the pattern;
 
 def login():
     filename = 'cookies.txt'
@@ -54,7 +54,7 @@ def getNewAC():
         if((item[0], item[2])) in records:
             continue
         records.add((item[0], item[2]))
-        res =[item[2].center(3, ' '), color[item[2]].center(8, ' '), item[0].center(20, ' '), item[1], item[8]]
+        res =[item[2], color[item[2]], item[0], item[1], item[8]]
         res[3] = int(res[3])
         if res[3] <= lastRecord:
             break;
@@ -78,8 +78,8 @@ def button(root, side, text, command = None):
     w.pack(side = side, expand = YES, fill = BOTH)  
     return w
     
-def label(root, side, text):
-    w = Label(root, text = text)
+def label(root, side, text, width): # name = "strname"
+    w = Label(root, text = text, relief = "solid", width = width)
     w.pack(side = side, expand = YES, fill = BOTH)
     return w
     
@@ -93,8 +93,8 @@ def removeItems():
         del(todoLst[i])
     del rmLst[:]
 
-def isNotBlank (myString):
-    return bool(myString and myString.strip())
+def isNotBlank (myStr):
+    return bool(myStr and myStr.strip())
 
 def main():
     global lastRecord, total, status, todoLst, rmLst, records, conf, useCookies
@@ -124,27 +124,32 @@ def main():
         removeItems()
         status = getStatus()
         #print(status)
-        if status and existNewAC():
-            getNewAC()
+        if status:
+            if existNewAC():
+                getNewAC()
         else:
             label(root, LEFT, 'ERROR! Please check your config.')
         
         
         root.title('Balloon Sender')
         root.attributes("-topmost", 1)
+        root.geometry('+0+0') # 'axb+x+y'
 
         refresh = Button(root, text="Refresh", fg="red", command=root.destroy)
         refresh.pack(side="bottom")
+        
+        w = [3, 8, 20]
         for i in range(len(todoLst)):
                 keyF = frame(root, TOP)
-                label(keyF, LEFT, i)
+                label(keyF, LEFT, i, 3)
                 for j in range(3):
                     txt = todoLst[i][j]
-                    label(keyF, LEFT, txt)
+                    label(keyF, LEFT, txt, w[j])
                 button(keyF, LEFT, 'Done', command = lambda i=i: addToRmLst(i))  
                 # need to notify when a button is clicked twice
 
         root.mainloop()
+
 
 if __name__ == '__main__':
     main()

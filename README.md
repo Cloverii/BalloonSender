@@ -20,7 +20,7 @@ Python 2.7
 - Records are shown out of order.
 
 ### Todo List
-- [ ] Improve UI
+- [x] Improve UI
 - [ ] Add GUI configuration
 - [ ] Try not to crawl all ACs every time
 - [ ] Refresh automatically
@@ -44,3 +44,13 @@ v0.2.1.
 v0.2.2
 
 - Fix README
+
+v0.3.0
+
+- Add support to private contests
+- Display hints when contest is unavailable
+
+v0.3.1
+
+- Fix the bug that all contests are shown as unavailable
+- Improve UI (fix the window and format the text)
