@@ -54,7 +54,10 @@ def getNewAC():
         if((item[0], item[2])) in records:
             continue
         records.add((item[0], item[2]))
-        res =[item[2], color[item[2]], item[0], item[1], item[8]]
+        cl = "nocolor"
+        if item[2] in color:
+            cl = color[item[2]]
+        res =[item[2], cl, item[0], item[1], item[8]]
         res[3] = int(res[3])
         if res[3] <= lastRecord:
             break;
@@ -141,7 +144,7 @@ def main():
         w = [3, 8, 20]
         for i in range(len(todoLst)):
                 keyF = frame(root, TOP)
-                label(keyF, LEFT, i, 3)
+                label(keyF, LEFT, i + 1, 3)
                 for j in range(3):
                     txt = todoLst[i][j]
                     label(keyF, LEFT, txt, w[j])

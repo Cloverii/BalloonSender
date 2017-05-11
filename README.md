@@ -54,3 +54,8 @@ v0.3.1
 
 - Fix the bug that all contests are shown as unavailable
 - Improve UI (fix the window and format the text)
+
+v0.3.2
+
+- Fix the bug that crashing when colors of balloons are not correctly set
+- Improve the display of records
