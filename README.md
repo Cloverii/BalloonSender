@@ -59,3 +59,8 @@ v0.3.2
 
 - Fix the bug that crashing when colors of balloons are not correctly set
 - Improve the display of records
+
+v0.4.0
+
+- Perform refactoring
+- Refresh user configuration when can't access the contest without restarting the program
