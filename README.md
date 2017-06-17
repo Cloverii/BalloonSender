@@ -64,3 +64,6 @@ v0.4.0
 
 - Perform refactoring
 - Refresh user configuration when can't access the contest without restarting the program
+
+v0.4.1
+- Follow PEP8
