@@ -5,6 +5,7 @@
 # 2. private contest (with usename || password, maybe wrong password)
 # 3. network error, including timeout or 502
 # 4. ...
+import os
 import re
 import json
 import urllib
@@ -23,7 +24,7 @@ class Connector(object):
             url='http://acm.cqu.edu.cn/ajax/login.php',
             data=postdata
         )
-        res = opener.open(req)
+        res = opener.open(req, timeout=10)
         # strr = res.read()
         return res.read() == '{"code":0,"msg":"Success..."}'
 
@@ -31,7 +32,7 @@ class Connector(object):
     def permission(self, cid):
         req = urllib2.Request('http://acm.cqu.edu.cn/contest_info.php?cid=' + cid)
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(Connector.cookie))
-        result = opener.open(req).read()
+        result = opener.open(req, timeout=10).read()
         # print result
         pattern = re.compile(r'Contest Unavailable!')
         ret = re.match(pattern, result)
@@ -41,14 +42,17 @@ class Connector(object):
 
     # need to add a timer, and return different msg for timeout, no ac and ...
     def get_status(self, cinfo):
-        data = urllib.urlencode(cinfo)
-        req = urllib2.Request('http://acm.cqu.edu.cn/ajax/contest_status_data.php?' + data)
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(Connector.cookie))
-        response = opener.open(req)
-        result = response.read()
-        if isnot_blank(result):
-            return json.loads(result)
-        else:
+        try:
+            data = urllib.urlencode(cinfo)
+            req = urllib2.Request('http://acm.cqu.edu.cn/ajax/contest_status_data.php?' + data)
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(Connector.cookie))
+            response = opener.open(req, timeout=10)
+            result = response.read()
+            if isnot_blank(result):
+                return json.loads(result)
+            else:
+                return {}
+        except:
             return {}
 
 
@@ -61,7 +65,9 @@ class Controller(object):
         self.archive_records = []
         self.records = set()
         self.cn = Connector()
-        self.login()
+        if self.login() != 0:
+            print "login error, please check your network and restart BalloonSender"
+            return
         with open('archive.json', 'r') as f:
             try:
                 # print(f.read())
@@ -78,10 +84,17 @@ class Controller(object):
             uinfo = self.conf['userinfo']
             if 'username' in uinfo and 'password' in uinfo:
                 if isnot_blank(uinfo['username']) and isnot_blank(uinfo['password']):
-                    self.cn.login(uinfo)
+                    try:
+                        self.cn.login(uinfo)
+                    except:
+                        return -1
+        return 0
 
     def access(self):
-        return self.cn.permission(self.conf['cinfo']['cid'])
+        try:
+            return self.cn.permission(self.conf['cinfo']['cid'])
+        except:
+            return None
 
     def exist_new_ac(self):
         return int(self.status['iTotalDisplayRecords']) != self.total_num
@@ -115,10 +128,10 @@ class Controller(object):
         self.status = self.cn.get_status(self.conf['cinfo'])
         # print(self.status)
         if self.status == {}:
-            self.login()
-            # try login if can't access
-            # (you can change conf without restarting the program)
-            self.status = self.cn.get_status(self.conf['cinfo'])
+            if self.login() == 0:
+                # try login if can't access
+                # (you can change conf without restarting the program)
+                self.status = self.cn.get_status(self.conf['cinfo'])
         if self.status != {}:
             if self.exist_new_ac():
                 self.get_new_ac(self.conf['color'])
@@ -175,7 +188,7 @@ def main():
     ctl = Controller()
     if not ctl.access():
         print('Contest Unavailable! '
-              'Check your config or permisson to the contest')
+              'Check your config, network or permisson to the contest')
     flag = True
     # lst = []
     while(flag):
@@ -184,11 +197,11 @@ def main():
         lst = []
         if ctl.refresh():
             lst = ctl.get_list()
+            if len(lst) == 0:
+                add_label(root, tk.LEFT, 'No unchecked AC records now~', 50)
         else:
-            add_label(root, LEFT, 'ERROR! Please check your user config.', 50)
+            add_label(root, tk.LEFT, 'ERROR! Please check your user config.', 50)
 
-        if len(lst) == 0:
-            add_label(root, LEFT, 'No unchecked AC records now~', 50)
 
         root.title('Balloon Sender')
         root.attributes("-topmost", 1)
